@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&family=Inter:wght@300;400;500;600&family=Poppins:wght@300;400;500;600&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Receipt Builder</h1>
+        <button class="header-btn" onclick="showLogin()">Login</button>
+    </div>
+
+    <div class="container">
+        <div id="controls">
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">Business Info</div>
+                <div class="section-content">
+                    <label>Business Name</label>
+                    <input id="shopName" value="O.B Gang Store" placeholder="Your business name">
+
+                    <label>Location</label>
+                    <div class="input-group">
+                        <input id="shopLocation" value="Nairobi" placeholder="City or address">
+                        <div class="location-suggestions" id="locationSuggestions"></div>
+                    </div>
+
+                    <label>Phone Number</label>
+                    <input id="shopPhone" value="+254 712 345 678" placeholder="+254 712 345 678">
+
+                    <label>Logo Upload</label>
+                    <input type="file" id="logoUpload" accept="image/*">
+
+                    <label>Logo Height (mm)</label>
+                    <div class="slider-row">
+                        <input type="range" id="logoHeightSlider" min="4" max="30" step="0.5" value="12">
+                        <span class="slider-value" id="logoHeightValue">12 mm</span>
+                    </div>
+
+                    <button type="button" onclick="saveCompanyDetails()" class="btn-secondary" style="margin-top:12px;">Save Company Details</button>
+                    <div class="storage-warning" style="display:none;" id="storageWarning">
+                        Saved to browser storage. May be cleared if you clear browser data.
+                    </div>
+
+                    <label>Footer Message</label>
+                    <input id="footerMessage" value="Thank you for your purchase!" placeholder="Footer message">
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header collapsed" onclick="toggleSection(this)">Appearance</div>
+                <div class="section-content collapsed">
+                    <label>Paper Size</label>
+                    <select id="paperSize">
+                        <optgroup label="Thermal Rolls">
+                            <option value="58">Thermal 58mm</option>
+                            <option value="76">Thermal 76mm</option>
+                            <option value="80" selected>Thermal 80mm</option>
+                            <option value="112">Thermal 112mm</option>
+                        </optgroup>
+                        <optgroup label="Standard Paper">
+                            <option value="a4">A4 (210 x 297mm)</option>
+                            <option value="a5">A5 (148 x 210mm)</option>
+                            <option value="a6">A6 (105 x 148mm)</option>
+                            <option value="letter">Letter (216 x 279mm)</option>
+                            <option value="legal">Legal (216 x 356mm)</option>
+                            <option value="half-letter">Half Letter (140 x 216mm)</option>
+                        </optgroup>
+                    </select>
+
+                    <label>Font Family</label>
+                    <select id="fontFamily">
+                        <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                        <option value="'Inter', system-ui">Inter</option>
+                        <option value="'Poppins', sans-serif">Poppins</option>
+                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                        <option value="'Roboto', sans-serif">Roboto</option>
+                    </select>
+
+                    <label>Colors</label>
+                    <div class="color-grid">
+                        <input type="color" id="colorPrimary" value="#d32f2f" title="Primary">
+                        <input type="color" id="colorBg" value="#ffffff" title="Background">
+                        <input type="color" id="colorText" value="#111111" title="Text">
+                    </div>
+
+                    <button type="button" onclick="saveAppearance()" class="btn-secondary" style="margin-top:12px;">Save Appearance</button>
+                    <div class="storage-warning" style="display:none;" id="appearanceWarning">
+                        Saved to browser storage. May be cleared if you clear browser data.
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header collapsed" onclick="toggleSection(this)">Items</div>
+                <div class="section-content collapsed">
+                    <label>Search Product</label>
+                    <div class="input-group">
+                        <input id="productSearch" placeholder="Search products...">
+                        <div class="product-suggestions" id="productSuggestions"></div>
+                    </div>
+                    
+                    <label style="margin-top:20px;">Items</label>
+                    <div id="itemsContainer"></div>
+                    <button type="button" onclick="addItem()" class="btn-secondary">Add Item</button>
+                    <button type="button" onclick="openProductManager()" class="btn-secondary">Manage Products</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header collapsed" onclick="toggleSection(this)">Pricing</div>
+                <div class="section-content collapsed">
+                    <label>Global Discount</label>
+                    <div class="flex-row">
+                        <input id="globalDiscValue" type="number" step="0.01" value="0" min="0">
+                        <select id="globalDiscType">
+                            <option value="percent">%</option>
+                            <option value="fixed">KES</option>
+                        </select>
+                    </div>
+
+                    <label>Tax / VAT (%)</label>
+                    <input id="taxRate" type="number" step="0.1" value="16" min="0">
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header collapsed" onclick="toggleSection(this)">Additional</div>
+                <div class="section-content collapsed">
+                    <label>Reference Prefix</label>
+                    <input id="refPrefix" value="REF" placeholder="REF">
+
+                    <label>Reference Number (Auto)</label>
+                    <input id="refNumber" value="" placeholder="001" readonly>
+
+                    <label>Date/Time Override</label>
+                    <input id="manualDateTime" type="datetime-local" placeholder="Leave empty for auto">
+
+                    <label>QR Code Content</label>
+                    <input id="qrContent" value="https://x.com/OBGang_Music" placeholder="URL, phone, UPI ID">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button onclick="printReceipt()" class="btn-secondary">Print</button>
+                <button onclick="generatePDF()" class="btn-primary">Download PDF</button>
+            </div>
+        </div>
+
+        <div id="preview">
+            <div class="receipt-paper" id="receiptContent">
+                <div class="logo-container">
+                    <img id="logoPreview" class="logo" src="" alt="" style="display:none;">
+                </div>
+
+                <div class="shop-name" id="shopNameDisplay">O.B Gang Store</div>
+                <div class="shop-info" id="shopLocationDisplay">Nairobi</div>
+                <div class="shop-info" id="shopPhoneDisplay">Tel: +254 712 345 678</div>
+
+                <div style="text-align:center; font-size:11px; margin:8px 0; border-top:1px dashed #999; border-bottom:1px dashed #999; padding:5px 0;">
+                    <div id="refDisplay" style="margin-bottom:2px;"></div>
+                    <div id="dateTimeDisplay"></div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="item-name">Item</th>
+                            <th class="qty">Qty</th>
+                            <th class="price">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2">Subtotal</td>
+                            <td class="amount" id="subtotal">0.00</td>
+                        </tr>
+                        <tr id="globalDiscountRow" style="display:none;">
+                            <td colspan="2">Discount</td>
+                            <td class="amount discount-line" id="globalDiscount">-0.00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Tax (<span id="taxRateDisplay">16</span>%)</td>
+                            <td class="amount" id="taxAmount">0.00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="total">TOTAL</td>
+                            <td class="amount total" id="grandTotal">0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="thanks" id="thanksDisplay">Thank you for your purchase!</div>
+
+                <div class="qr-area">
+                    <div id="qrcode" style="display:inline-block;"></div>
+                    <div style="font-size:10px; margin-top:4px;" id="qrLabel"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

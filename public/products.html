@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Manager</title>
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+    .panel { background: white; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border-light); }
+    .panel h2 { font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 16px; }
+    .form-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 12px; }
+    .actions button { padding: 6px 12px; margin: 0 4px 0 0; font-size: 11px; }
+    .csv-info { background: #e3f2fd; padding: 12px; font-size: 12px; margin-top: 8px; border: 1px solid var(--primary); }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-light); font-size: 13px; }
+    th { background: #fafafa; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; color: var(--text-secondary); }
+    tr:hover { background: #fafafa; }
+    @media (max-width: 768px) {
+      .form-row { grid-template-columns: 1fr; }
+      table { font-size: 11px; }
+      th, td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>Product Manager</h1>
+</div>
+<div class="container">
+  <div class="panel">
+    <h2>Add Product</h2>
+    <div class="form-row">
+      <div><label>Product Name</label><input id="productName" placeholder="Product name"></div>
+      <div><label>SKU</label><input id="productSku" placeholder="SKU"></div>
+      <div><label>Price</label><input id="productPrice" type="number" step="0.01" placeholder="0.00"></div>
+      <div><label>Stock</label><input id="productStock" type="number" placeholder="0"></div>
+    </div>
+    <button class="btn-primary" onclick="addProduct()">Add Product</button>
+    <button class="btn-secondary" id="updateBtn" style="display:none;" onclick="updateProduct()">Update Product</button>
+    <button class="btn-secondary" id="cancelBtn" style="display:none;" onclick="cancelEdit()">Cancel</button>
+  </div>
+  <div class="panel">
+    <h2>Import CSV</h2>
+    <input type="file" id="csvFile" accept=".csv">
+    <button class="btn-primary" onclick="importCSV()">Import CSV</button>
+    <button class="btn-secondary" onclick="downloadTemplate()">Download Template</button>
+    <button class="btn-danger" onclick="clearAllProducts()">Clear All</button>
+    <div class="csv-info">CSV Format: name,sku,price,stock<br>Example: Product Name,SKU123,99.99,50</div>
+  </div>
+  <div class="panel">
+    <h2>Products (<span id="productCount">0</span>)</h2>
+    <input type="text" id="searchProducts" placeholder="Search products..." style="margin-bottom:12px;">
+    <table>
+      <thead><tr><th>Name</th><th>SKU</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+      <tbody id="productsTable"></tbody>
+    </table>
+  </div>
+</div>
+<script src="js/products.js"></script>
+</body>
+</html>

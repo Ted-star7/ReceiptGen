@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Methods Manager</title>
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    .container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+    .panel { background: white; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border-light); }
+    .panel h2 { font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 16px; }
+    .field-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+    .field-row input { flex: 1; }
+    .field-row button { width: auto; padding: 6px 12px; margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-light); font-size: 13px; }
+    th { background: #fafafa; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>Payment Methods Manager</h1>
+</div>
+<div class="container">
+  <div class="panel">
+    <h2>Add Payment Method</h2>
+    <label>Method Name</label>
+    <input id="methodName" placeholder="e.g., PayPal, Crypto">
+    
+    <label style="margin-top:12px;">Custom Fields (Optional)</label>
+    <div id="fieldsContainer"></div>
+    <button class="btn-secondary" onclick="addField()" style="margin-top:8px;font-size:11px;padding:6px;">+ Add Field</button>
+    
+    <button class="btn-primary" onclick="savePaymentMethod()">Save Payment Method</button>
+  </div>
+  
+  <div class="panel">
+    <h2>Payment Methods</h2>
+    <table>
+      <thead><tr><th>Name</th><th>Fields</th><th>Actions</th></tr></thead>
+      <tbody id="methodsTable"></tbody>
+    </table>
+  </div>
+</div>
+<script src="js/payment-methods.js"></script>
+</body>
+</html>
