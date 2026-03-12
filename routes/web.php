@@ -58,6 +58,91 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/orders', [App\Http\Controllers\OrderController::class, 'list']);
 });
 
+// Swagger UI (manual OpenAPI spec)
+Route::get('/swagger', function () {
+    return view('swagger');
+})->name('swagger');
+
+// Dynamic OpenAPI JSON generated from current routes
+Route::get('/swagger.json', function () {
+    $routes = Route::getRoutes();
+    $paths = [];
+
+    foreach ($routes as $route) {
+        $uri = $route->uri();
+
+        // Ignore internal/framework routes that should not appear in the public API docs
+        if (str_starts_with($uri, '_') || str_starts_with($uri, 'horizon') || str_starts_with($uri, 'sanctum') || str_starts_with($uri, 'telescope')) {
+            continue;
+        }
+
+        $methods = array_values(array_diff($route->methods(), ['HEAD']));
+        if (empty($methods)) {
+            continue;
+        }
+
+        $path = '/' . ltrim($uri, '/');
+        if (! isset($paths[$path])) {
+            $paths[$path] = [];
+        }
+
+        preg_match_all('/\{([^}]+)\}/', $uri, $paramMatches);
+        $pathParams = [];
+        foreach ($paramMatches[1] as $param) {
+            $pathParams[] = [
+                'name' => $param,
+                'in' => 'path',
+                'required' => true,
+                'schema' => ['type' => 'string'],
+            ];
+        }
+
+        $operationName = $route->getName() ?: ($route->action['controller'] ?? null);
+        if (! $operationName) {
+            $operationName = implode('|', $methods) . ' ' . $path;
+        }
+
+        foreach ($methods as $method) {
+            $methodKey = strtolower($method);
+            $operation = [
+                'summary' => $operationName,
+                'parameters' => $pathParams,
+                'responses' => [
+                    '200' => [
+                        'description' => 'OK',
+                    ],
+                ],
+            ];
+
+            if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
+                $operation['requestBody'] = [
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                            ],
+                        ],
+                    ],
+                ];
+            }
+
+            $paths[$path][$methodKey] = $operation;
+        }
+    }
+
+    return response()->json([
+        'openapi' => '3.0.1',
+        'info' => [
+            'title' => 'ReceiptGen API',
+            'version' => '1.0.0',
+        ],
+        'servers' => [
+            ['url' => url('/')],
+        ],
+        'paths' => $paths,
+    ]);
+});
+
 // Receipt builder - accessible to both guest and authenticated users
 Route::get('/', [ReceiptController::class, 'index'])->name('receipt.builder');
 Route::post('/orders', [ReceiptController::class, 'store'])->name('orders.store');
