@@ -7,7 +7,8 @@
                 <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
         </button>
-        <h1><a href="/" style="color:white;text-decoration:none;">Receipt Builder</a> <span style="font-size:11px;font-weight:400;opacity:0.8;">by Anzar KE</span></h1>
+        <h1><a href="/" style="color:white;text-decoration:none;">Receipt Builder</a> 
+            {{-- <span style="font-size:11px;font-weight:400;opacity:0.8;">by Anzar KE</span></h1> --}}
     </div>
     <div class="header-actions">
         @auth

@@ -11,7 +11,7 @@ class StaffController extends Controller
 {
     public function index()
     {
-        $businesses = auth()->user()->businesses()->wherePivot('role', 'owner')->get();
+        $businesses = auth()->user->businesses()->wherePivot('role', 'owner')->get();
         return view('staff.index', compact('businesses'));
     }
 
